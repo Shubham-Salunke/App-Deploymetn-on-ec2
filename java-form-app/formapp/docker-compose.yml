@@ -1,0 +1,33 @@
+version: '3.8' # Specify the Docker Compose file format version
+
+services:
+  formapp: # Define a service named 'formapp' for your Spring Boot app
+    build: . # Build the Docker image from the Dockerfile in the current directory
+    ports:
+      - "8080:8080" # Map host port 8080 to container port 8080
+    container_name: spring-form-app # Assign a custom name to the container
+    restart: always # Always restart the container if it stops
+    depends_on: # Ensure the database service starts before the app service
+      - db
+    environment: # Environment variables for the Spring Boot application
+      # These variables will override the settings in application.properties
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db:3306/formapp_db?useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update # Automatically update schema
+
+  db: # Define a service named 'db' for the MySQL database
+    image: mysql:8.0 # Use a MySQL 8.0 image
+    container_name: mysql_db # Assign a custom name to the database container
+    restart: always # Always restart the container if it stops
+    environment: # Environment variables for MySQL configuration
+      MYSQL_DATABASE: formapp_db # Database name
+      MYSQL_USER: user # Database username
+      MYSQL_PASSWORD: password # Database password
+      MYSQL_ROOT_PASSWORD: root_password # Root password for MySQL (for initial setup/admin)
+    volumes:
+      - mysql_data:/var/lib/mysql # Mount a named volume for data persistence
+
+# Define named volumes for data persistence
+volumes:
+  mysql_data: # This volume will store your MySQL data
