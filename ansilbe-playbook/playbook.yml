@@ -1,0 +1,25 @@
+-
+  name: File operations on all servers
+  hosts: servers
+  become: true
+  tasks:
+    - name: copy file to remote servers
+      copy: 
+        src: files/sample.txt
+        dest: /tmp/sample.txt
+        owner: ubuntu
+        group: ubuntu
+        mode: "0644"
+
+    - name: Rename the copied file
+      command: mv /tmp/sample.txt /tmp/renamed_sample.txt
+
+    - name: Change permission of the file
+      file: 
+        path: /tmp/renamed_sample.txt
+        mode: '0755'
+
+    - name: Delete the file
+      file: 
+        path: /tmp/renamed_sample.txt
+        state: absent
